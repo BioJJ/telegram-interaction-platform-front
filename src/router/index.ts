@@ -1,8 +1,6 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import { authGuard, authGuardLayout } from '../_helpers/navigationGuards'
 import chatsRoutes from './chats.routes'
-import projectSRoutes from './projects.routes'
-import activitiesRoutes from './activities.routes'
 
 const routes: Array<RouteRecordRaw> = [
 	{
@@ -30,9 +28,7 @@ const routes: Array<RouteRecordRaw> = [
 				component: () =>
 					import(/* webpackChunkName: "home" */ './../views/user/User.vue')
 			},
-			...chatsRoutes,
-			...projectSRoutes,
-			...activitiesRoutes
+			...chatsRoutes
 		]
 	},
 	{
