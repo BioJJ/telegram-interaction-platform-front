@@ -11,7 +11,7 @@
 				<v-card class="pa-10 pgc-card-box pgc-card-crud">
 					<v-form ref="form" lazy-validation>
 						<div class="pgc-crud-header">
-							<h2>Client</h2>
+							<h2>Chat</h2>
 							<v-progress-linear
 								value="8"
 								color="primary"
@@ -20,27 +20,36 @@
 							/>
 						</div>
 						<v-row class="pgc-form-row">
-							<v-col cols="5">
+							<v-col cols="3">
 								<v-text-field
-									:rules="validators.name"
-									v-model="form.name"
-									label="Name"
+									v-model="form.chatId"
+									readonly
+									label="ChatId"
 									dense
 								></v-text-field>
 							</v-col>
 
 							<v-col cols="4">
 								<v-text-field
-									:rules="validators.email"
-									v-model="form.email"
-									label="Email"
+									:rules="validators.username"
+									v-model="form.username"
+									label="Username"
+									dense
+								></v-text-field>
+							</v-col>
+
+							<v-col cols="4">
+								<v-text-field
+									:rules="validators.type"
+									v-model="form.type"
+									label="Type"
 									dense
 								></v-text-field>
 							</v-col>
 						</v-row>
 					</v-form>
 					<div class="d-flex justify-start mt-15">
-						<v-btn to="/clients" color="red" outlined class="ml-5 pgc-btn-form">
+						<v-btn to="/chats" color="red" outlined class="ml-5 pgc-btn-form">
 							Cancel
 						</v-btn>
 						<v-btn
@@ -70,35 +79,35 @@
 import { defineComponent } from 'vue'
 
 import { Validator } from '../../_helpers/validators'
-import { Client } from '../../models/Client'
 import { useToast } from 'vue-toastification'
-import { useClientStore } from '../../stores/client.store'
+import { useChatStore } from '../../stores/chat.store'
+import { Chat } from '../../models/Chat'
 
 export default defineComponent({
 	name: 'ClientsForm',
 	data: () => ({
 		formLoading: false,
 		validators: {
-			name: [Validator.required(), Validator.max(100), Validator.min(4)],
-			email: [Validator.required(), Validator.email()]
+			username: [Validator.required()],
+			type: [Validator.required()]
 		},
-		client: null as unknown as Client,
-		form: new Client(),
+		chat: null as unknown as Chat,
+		form: new Chat(),
 		toast: useToast(),
-		store: useClientStore(),
+		store: useChatStore(),
 		service: []
 	}),
 
 	mounted(): void {
-		this.$route.params.id && this.getClient()
+		this.$route.params.id && this.getChats()
 	},
 	methods: {
-		async getClient() {
+		async getChats() {
 			try {
-				this.client = await this.store.fetchClient(this.$route.params.id)
-				this.form = this.client
+				this.chat = await this.store.fetchClient(this.$route.params.id)
+				this.form = this.chat
 			} catch (error) {
-				this.toast.error('Client not found')
+				this.toast.error('Chats not found')
 			}
 		},
 		async submitForm(): Promise<void> {
@@ -106,13 +115,13 @@ export default defineComponent({
 			try {
 				if (this.$route.params.id) {
 					await this.store.fetchUpdateClient(this.form)
-					this.toast.info('Client Updated successfully')
+					this.toast.info('Chat Updated successfully')
 				} else {
 					await this.store.fetchSaveClient(this.form)
-					this.toast.success('Client Saved successfully')
+					this.toast.success('Chat Saved successfully')
 				}
 				this.formLoading = false
-				this.$router.push({ name: 'Clients' })
+				this.$router.push({ name: 'Chats' })
 
 				this.formLoading = false
 			} catch (error) {
@@ -121,15 +130,15 @@ export default defineComponent({
 		},
 		cancel(): void {
 			this.resetForm()
-			this.$router.push({ name: 'Clients' })
+			this.$router.push({ name: 'Chats' })
 		},
 		resetForm() {
-			if (this.client) {
-				this.getClient()
+			if (this.chat) {
+				this.getChats()
 			} else {
 				this.form = {
-					name: '',
-					email: '',
+					username: '',
+					type: '',
 					id: undefined
 				}
 			}
@@ -137,4 +146,3 @@ export default defineComponent({
 	}
 })
 </script>
-../../models/Chat../../stores/chat.store
