@@ -2,6 +2,7 @@ import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import { authGuard, authGuardLayout } from '../_helpers/navigationGuards'
 import chatsRoutes from './chats.routes'
 import botsRoutes from './bots.routes'
+import messagesRoutes from './messages.routes'
 
 const routes: Array<RouteRecordRaw> = [
 	{
@@ -30,7 +31,8 @@ const routes: Array<RouteRecordRaw> = [
 					import(/* webpackChunkName: "home" */ './../views/user/User.vue')
 			},
 			...chatsRoutes,
-			...botsRoutes
+			...botsRoutes,
+			...messagesRoutes
 		]
 	},
 	{
