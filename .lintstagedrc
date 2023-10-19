@@ -1,0 +1,1 @@
+{"*.{ts,vue,js}": "prettier --config .prettierrc 'src/**/*.{ts, vue, js}' --write"}
