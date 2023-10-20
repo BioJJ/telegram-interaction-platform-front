@@ -95,4 +95,3 @@ export default defineComponent({
 	}
 })
 </script>
-../../models/Chat../../stores/chat.store

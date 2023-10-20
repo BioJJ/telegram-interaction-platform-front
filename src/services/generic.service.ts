@@ -32,4 +32,12 @@ export default class GenericService<T extends EntityBase> {
 	findById(id: number) {
 		return api.get<T>(`/${this.endpoint}/${id}`)
 	}
+
+	findBy(url: string, param: number) {
+		return api.get<T[]>(`/${this.endpoint}/${url}/${param}`)
+	}
+
+	post(url: string, body: T) {
+		return api.post<T>(`/${this.endpoint}/${url}`, body)
+	}
 }

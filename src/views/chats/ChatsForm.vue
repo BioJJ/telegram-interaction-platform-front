@@ -48,6 +48,26 @@
 							</v-col>
 						</v-row>
 					</v-form>
+
+					<v-main>
+						<div class="chat-container">
+							<div class="chat-messages">
+								<div
+									v-for="(message, index) in messagesChat"
+									:key="index"
+									:class="{ sent: message.isBot }"
+								>
+									{{ message.text }}
+								</div>
+							</div>
+							<input
+								v-model="newMessage"
+								@keyup.enter="sendMessage"
+								placeholder="Digite sua mensagem"
+							/>
+						</div>
+					</v-main>
+
 					<div class="d-flex justify-start mt-15">
 						<v-btn to="/chats" color="red" outlined class="ml-5 pgc-btn-form">
 							Cancel
@@ -82,9 +102,12 @@ import { Validator } from '../../_helpers/validators'
 import { useToast } from 'vue-toastification'
 import { useChatStore } from '../../stores/chat.store'
 import { Chat } from '../../models/Chat'
+import { Message } from '../../models/Message'
+import { useMessageStore } from '../../stores/message.store'
+import { MessageSend } from '../../models/MessageSend'
 
 export default defineComponent({
-	name: 'ClientsForm',
+	name: 'ChatsForm',
 	data: () => ({
 		formLoading: false,
 		validators: {
@@ -95,7 +118,9 @@ export default defineComponent({
 		form: new Chat(),
 		toast: useToast(),
 		store: useChatStore(),
-		service: []
+		storeMessage: useMessageStore(),
+		newMessage: '',
+		messagesChat: [] as unknown as Message[]
 	}),
 
 	mounted(): void {
@@ -106,8 +131,21 @@ export default defineComponent({
 			try {
 				this.chat = await this.store.fetchClient(this.$route.params.id)
 				this.form = this.chat
+
+				this.getMessageByChatId()
 			} catch (error) {
 				this.toast.error('Chats not found')
+			}
+		},
+		async getMessageByChatId() {
+			try {
+				const url = 'chat'
+				this.messagesChat = await this.storeMessage.fetchBy(
+					url,
+					this.chat.chatId as number
+				)
+			} catch (error) {
+				this.toast.error('Message for ChatId not found')
 			}
 		},
 		async submitForm(): Promise<void> {
@@ -142,7 +180,43 @@ export default defineComponent({
 					id: undefined
 				}
 			}
+		},
+		async sendMessage() {
+			if (this.newMessage.trim() === '') return
+
+			const messagetoSend: MessageSend = {
+				chatId: this.chat.chatId,
+				messageText: this.newMessage,
+				id: undefined
+			}
+			const messageSend = await this.storeMessage.fetchPost(
+				'send-message',
+				messagetoSend
+			)
+
+			this.messagesChat.push(messageSend)
+			this.newMessage = ''
 		}
 	}
 })
 </script>
+
+<style scoped>
+.chat-container {
+	width: 100%;
+	border: 1px solid #ccc;
+	padding: 10px;
+}
+
+.chat-messages {
+	min-height: 200px;
+	padding: 10px;
+	overflow-y: scroll;
+}
+
+.sent {
+	text-align: right;
+	background-color: #e6f7ff;
+	margin: 5px 0;
+}
+</style>
